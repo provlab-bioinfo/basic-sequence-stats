@@ -1,0 +1,10 @@
+name: raw-read-qc
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3
+  - fastp=0.23.4
+  - nanoq=0.10.0
+  - nextflow=23.04.4
