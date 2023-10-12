@@ -1,4 +1,5 @@
 # Raw Read QC
+ [![Lifecycle: WIP](https://img.shields.io/badge/lifecycle-WIP-yellow.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental) [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/CompEpigen/scMethrix/issues) [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://opensource.org/license/mit/) [![minimal Python version: 3.0](https://img.shields.io/badge/Python-3.0-6666ff.svg)](https://www.python.org/) [![Package Version = 0.0.1](https://img.shields.io/badge/Package%20version-0.0.1-orange.svg?style=flat-square)](https://github.com/provlab-bioinfo/raw-read-qc/blob/main/NEWS) [![Last-changedate](https://img.shields.io/badge/last%20change-2023--10--12-yellowgreen.svg)](https://github.com/provlab-bioinfo/raw-read-qc/blob/main/NEWS)
 
 A generic pipeline that can be run on an arbitrary set of FASTQ files from Illumina or Nanopore NGS, regardless of the project or organism of interest. Built upon previous work at the [BCCDC-PHL](http://www.bccdc.ca/)<sup>[1](#references),[2](#references)</sup>.
 
@@ -13,7 +14,7 @@ A generic pipeline that can be run on an arbitrary set of FASTQ files from Illum
 - [Workflow](#workflow)
 - [References](#references)
 
-## Quick-Start Guide
+## Quick code
 
 ```
 conda activate raw-read-qc
