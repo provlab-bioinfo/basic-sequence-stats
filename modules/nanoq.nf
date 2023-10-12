@@ -13,7 +13,7 @@ process nanoq {
     echo 'sample_id' >> sample_id.csv
     echo "${sample_id}" >> sample_id.csv
 
-    nanoq --header --stats --input ${reads} | tr ' ' ',' > nanoq.csv
+    cat ${reads} | nanoq --header --stats | tr ' ' ',' > nanoq.csv
 
     paste -d ',' sample_id.csv nanoq.csv > ${sample_id}_nanoq.csv
     """
