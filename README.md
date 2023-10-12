@@ -1,6 +1,6 @@
 # Raw Read QC
 
-A generic pipeline that can be run on an arbitrary set of Illumina or Nanopore sequence files, regardless of the project or organism of interest. Based upon previous work at the BC-CDC<sup>[1](#references),[2](#references)</sup>.
+A generic pipeline that can be run on an arbitrary set of FASTQ files from Illumina or Nanopore NGS, regardless of the project or organism of interest. Built upon previous work at the [BCCDC-PHL](http://www.bccdc.ca/)<sup>[1](#references),[2](#references)</sup>.
 
 ## Table of Contents
 
@@ -43,7 +43,7 @@ conda env create -f ./environments/environment.yml
 A single output file in .csv format will be created in the directory specified by `--outdir`. The filename will be `basic_qc_stats.csv`.
 If a prefix is provided using the `--prefix` flag, it will be prepended to the output filename, for example: `prefix_basic_qc_stats.csv`.
 
-**For Illumina**: The output file headers from [`fastp`](https://github.com/OpenGene/fastp) (see [example](illumina_basic_qc_stats.csv)):
+**For Illumina**: The output file headers from [`fastp`](https://github.com/OpenGene/fastp) (see [example](/examples/illumina_basic_qc_stats.csv)):
 
 ```
 sample_id
@@ -69,7 +69,7 @@ adapter_trimmed_reads
 adapter_trimmed_bases
 ```
 
-**For Nanopore**: The output file headers from [`nanoq`](https://github.com/esteinig/nanoq) (see [example](nanopore_basic_qc_stats.csv)):
+**For Nanopore**: The output file headers from [`nanoq`](https://github.com/esteinig/nanoq) (see [example](/examples/nanopore_basic_qc_stats.csv)):
 
 ```
 sample_id
@@ -85,6 +85,8 @@ median_quality
 ```
 
 ## References
-1. https://github.com/BCCDC-PHL/basic-nanopore-qc
-2. https://github.com/BCCDC-PHL/basic-sequence-qc
+1. BCCDC-PHL/basic-sequence-qc: Generate some basic quality control statistics on an arbitrary set of Illumina fastq sequence files. https://github.com/BCCDC-PHL/basic-sequence-qc 
+2. BCCDC-PHL/basic-nanopore-qc: Collect basic sequence QC metrics from nanopore reads. https://github.com/BCCDC-PHL/basic-nanopore-qc
+
+
 
