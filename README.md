@@ -18,32 +18,32 @@ A generic pipeline that can be run on an arbitrary set of Illumina or Nanopore s
 ```
 conda activate raw-read-qc
 nextflow run pipelines/raw-read-qc \
-  [--prefix 'prefix'] \
-  --fastq_input <your fastq input directory> \
+  --fastq_input <input directory> \
   --outdir <output directory> \
-  [--nanopore | --illumina]
+  {--nanopore | --illumina} \
+  [--prefix 'prefix']
 ```
 
 ## Dependencies
 
-[Conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) is required to build an environment with required workflow dependencies. To create the environment
+[Conda](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) is required to build the [raw-read-qc](/environments/environment.yml) environment with the necessary workflow dependencies. To create the environment:
 ```
 conda env create -f ./environments/environment.yml
 ```
 
-## Analyses
-
+## Analyses:
 * [`fastp`](https://github.com/OpenGene/fastp): QC stats for Illumina experiments
 * [`nanoq`](https://github.com/esteinig/nanoq): QC stats for Nanopore experiments
 
 ## Input
-
+- Illumina: Paired reads are assumed and must use the default [Illumina nomenclature](https://support.illumina.com/help/BaseSpace_OLH_009008/Content/Source/Informatics/BS/NamingConvention_FASTQ-files-swBS.htm#) of `{SampleName}_S#_L001_R#_001.fastq.gz`. The script will search for `R1` and `R2`, and assign sample names as `SampleName_S1`.
+- Nanopore: Accepts single or split FASTQ files, and must use the default Nanopore nomenclature of `{FlowCellID}_pass_barcode##_{random}[_#].fastq.gz`. Files containing the same barcode and terminated with `_#` will be automatically concatenated. Sample name will be assigned as `barcode##`.
 
 ## Output
 A single output file in .csv format will be created in the directory specified by `--outdir`. The filename will be `basic_qc_stats.csv`.
 If a prefix is provided using the `--prefix` flag, it will be prepended to the output filename, for example: `prefix_basic_qc_stats.csv`.
 
-The output file headers for Illumina data:
+**For Illumina**: The output file headers from [`fastp`](https://github.com/OpenGene/fastp) (see [example](illumina_basic_qc_stats.csv)):
 
 ```
 sample_id
@@ -69,7 +69,7 @@ adapter_trimmed_reads
 adapter_trimmed_bases
 ```
 
-The output file headers for Nanopore data:
+**For Nanopore**: The output file headers from [`nanoq`](https://github.com/esteinig/nanoq) (see [example](nanopore_basic_qc_stats.csv)):
 
 ```
 sample_id
@@ -83,7 +83,6 @@ median_length
 mean_quality
 median_quality
 ```
-
 
 ## References
 1. https://github.com/BCCDC-PHL/basic-nanopore-qc
