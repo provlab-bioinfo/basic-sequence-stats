@@ -1,29 +1,40 @@
 #!/usr/bin/env nextflow
 
-nextflow.enable.dsl = 2
+ /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*\
+|   basic-sequence-stats                                               |
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+|   Github : https://github.com/provlab-bioinfo/basic-sequence-stats   |
+ \*-------------------------------------------------------------------*/
 
-include { fastp } from './modules/fastp.nf'
-include { nanoq } from './modules/nanoq.nf'
+nextflow.enable.dsl = 2
+WorkflowMain.initialise(workflow, params, log)
+
+if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
+if (params.platform != 'illumina' || params.platform == 'nanopore') {exit 1, "Platform must be either 'illumina' or 'nanopore'!" }
+if ((params.sheet == null && params.folder) == null || (params.sheet != null && params.folder != null)) {
+    exit 1, "Must specify one of '--folder' or '--sheet'!"}
+
+include { SHEET_CHECK } from                 '../subworkflows/local/input_check'
+include { QC } from                          '../subworkflows/local/qc'
+include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
 
 workflow {
-  if (!(params.illumina ^ params.nanopore)) { //XNOR
-      throw new Exception("Either --nanopore or --illumina must be flagged.")
-  }
+    
+    ch_software_versions = Channel.empty()
 
-  output_prefix = params.prefix == '' ? params.prefix : params.prefix + '_'
-  
-  main:
-    if (params.illumina) {
-      def grouping = { file -> file.name.lastIndexOf('_L001').with {it != -1 ? file.name[0..<it] : file.name} }
-      ch_fastq_input = Channel.fromFilePairs( params.illumina_search_path, flat: true, grouping).map{ it -> [it[0], it.tail()] }
-      fastp(ch_fastq_input)
-      fastp.out.collectFile(keepHeader: true, sort: { it.text }, name: "${output_prefix}basic_qc_stats.csv", storeDir: "${params.outdir}")
+    // SUBWORKFLOW: Read in folder/samplesheet, validate, and stage input files
+    if (param.sheet) {
+        reads = SHEET_CHECK (ch_input).out.reads
+        ch_software_versions = ch_software_versions.mix(SHEET_CHECK.out.versions)
+    } else if (param.folder) {
+        reads = FOLDER_CHECK(ch_input).out.reads
+        ch_software_versions = ch_software_versions.mix(FOLDER_CHECK.out.versions)
     }
 
-    if (params.nanopore) {
-      def grouping = { file -> file.name.lastIndexOf('_').with {it != -1 ? file.name[0..<it] : file.name} }
-      ch_fastq_input = Channel.fromFilePairs( params.nanopore_search_path, flat: true , size: -1, grouping).map{ it -> [(it[0] =~ /barcode\d{1,3}/)[0], it.tail()] }
-      nanoq(ch_fastq_input)
-      nanoq.out.collectFile(keepHeader: true, sort: { it.text }, name: "${output_prefix}basic_qc_stats.csv", storeDir: "${params.outdir}")
-    }
+    // SUBWORKFLOW: Perform QC
+    QC(reads)
+    ch_software_versions = ch_software_versions.mix(QC.out.versions)
+
+   // SUBWORKFLOW: Get versioning
+    CUSTOM_DUMPSOFTWAREVERSIONS (ch_software_versions.unique().collectFile(name: 'collated_versions.yml'))
 }
