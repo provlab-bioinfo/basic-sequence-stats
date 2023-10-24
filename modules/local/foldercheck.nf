@@ -1,5 +1,5 @@
-process foldercheck {
-    tag "$samplesheet"
+process FOLDERCHECK {
+    tag "$folder"
     label 'process_medium'
 
     conda "conda-forge::python=3.9.5"
@@ -8,14 +8,13 @@ process foldercheck {
         'biocontainers/python:3.9--1' }"
 
     input:
-    path folder
+        path folder
 
     output:
-    path '*.csv'       , emit: csv
-    path "versions.yml", emit: versions
+        path "versions.yml", emit: versions
 
     when:
-    task.ext.when == null || task.ext.when
+        task.ext.when == null || task.ext.when
 
     script: // This script is bundled with the pipeline, in nf-core/rnaseq/bin/
     """

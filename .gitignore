@@ -1,3 +1,5 @@
 .nextflow*
-work
+work/
 test_*
+results/
+testOutput/

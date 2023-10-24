@@ -1,7 +1,8 @@
 
-include {FASTQC as FASTQC_QC} from             '../../modules/nf-core/fastqc/main'
-include {SEQKIT_STATS as SEQKIT_STATS_QC} from '../../modules/nf-core/seqkit/stats/main'
-include {CSVTK_CONCAT as CSVTK_CONCAT_QC} from '../../modules/nf-core/csvtk/concat/main'
+include { FASTQC as FASTQC_QC } from             '../../modules/nf-core/fastqc/main'
+include { SEQKIT_STATS as SEQKIT_STATS_QC } from '../../modules/nf-core/seqkit/stats/main'
+include { CSVTK_CONCAT as CSVTK_CONCAT_QC } from '../../modules/nf-core/csvtk/concat/main'
+include { MULTIQC } from                       '../../modules/nf-core/multiqc/main'
 
 workflow QC {   
     take:
@@ -19,15 +20,16 @@ workflow QC {
             ch_versions = ch_versions.mix(FASTQC_QC.out.versions.first())
         }
 
+        MULTIQC()
+
         // SUBWORKFLOW: Do read statistics
+        in_format = out_format = "tsv"
+         
         SEQKIT_STATS_QC(reads)
         ch_versions = ch_versions.mix(SEQKIT_STATS_QC.out.versions.first())
-
-        // SUBWORKFLOW: Concatenate statistics
-        in_format = out_format = "tsv"
-        label = params.label ? params.label + "_" : ""
+        
         CSVTK_CONCAT_QC(SEQKIT_STATS_QC.out.stats.map { cfg, stats -> stats }.collect().map { 
-            files -> tuple([id: params.platform +"_reads."+label+"_seqstats"], files)
+            files -> tuple([id: params.label+".seqkit"], files)
         }, in_format, out_format )
         
     emit:

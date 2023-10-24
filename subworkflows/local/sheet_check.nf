@@ -11,23 +11,25 @@ workflow SHEET_CHECK {
     main:
         SAMPLESHEETCHECK ( samplesheet ).csv.splitCsv ( header:true, sep:',' )        
             .map { create_read_channels(it) }
-            .set { reads }
+            .set { reads_channel }
 
-        reads.map { meta, illuminaFQ, nanopore -> [ meta, illuminaFQ ] }
-            .filter { meta, illuminaFQ -> illuminaFQ[0] != 'NA' && illuminaFQ[1] != 'NA' }
-            .set { illumina }
+        if (params.platform = "illumina") {
+            reads_channel.map { meta, illuminaFQ, nanopore -> [ meta, illuminaFQ ] }
+                .filter { meta, illuminaFQ -> illuminaFQ[0] != 'NA' && illuminaFQ[1] != 'NA' }
+                .set { reads }
+        }
         
-        reads.map {meta, illuminaFQ, nanopore -> [ meta, nanopore ] }
-            .filter { meta, nanopore -> nanopore != 'NA' }
-            .set { nanopore }
+        if (params.platform = "nanopore") {
+            reads_channel.map {meta, illuminaFQ, nanopore -> [ meta, nanopore ] }
+                .filter { meta, nanopore -> nanopore != 'NA' }
+                .set { reads }
+        }
 
-        reads.map { meta, illuminaFQ, nanopore -> meta.id }
+        reads_channel.map { meta, illuminaFQ, nanopore -> meta.id }
             .set {ids}
 
     emit:
-        reads      // channel: [ val(meta), [ illumina ], nanopore ]
-        illumina   // channel: [ val(meta), [ illumina ] ]
-        nanopore   // channel: [ val(meta), nanopore ]
+        reads      // channel: [ val(meta), ( [ illumina ] | nanopore ) ]
         ids
         versions = SAMPLESHEETCHECK.out.versions // channel: [ versions.yml ]
 }

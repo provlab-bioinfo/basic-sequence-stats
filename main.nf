@@ -9,25 +9,28 @@
 nextflow.enable.dsl = 2
 WorkflowMain.initialise(workflow, params, log)
 
-if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
-if (params.platform != 'illumina' || params.platform == 'nanopore') {exit 1, "Platform must be either 'illumina' or 'nanopore'!" }
-if ((params.sheet == null && params.folder) == null || (params.sheet != null && params.folder != null)) {
-    exit 1, "Must specify one of '--folder' or '--sheet'!"}
+// if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
+// if (params.platform != 'illumina' || params.platform == 'nanopore') {exit 1, "Platform must be either 'illumina' or 'nanopore'!" }
+// if ((params.sheet == null && params.folder) == null || (params.sheet != null && params.folder != null)) {
+//     exit 1, "Must specify one of '--folder' or '--sheet'!"}
 
-include { SHEET_CHECK } from                 '../subworkflows/local/input_check'
-include { QC } from                          '../subworkflows/local/qc'
-include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
+include { SHEET_CHECK } from                 './subworkflows/local/sheet_check'
+include { FOLDER_CHECK } from                './subworkflows/local/folder_check'
+include { QC } from                          './subworkflows/local/qc'
+include { CUSTOM_DUMPSOFTWAREVERSIONS } from './modules/nf-core/custom/dumpsoftwareversions/main'
 
 workflow {
     
     ch_software_versions = Channel.empty()
 
     // SUBWORKFLOW: Read in folder/samplesheet, validate, and stage input files
-    if (param.sheet) {
-        reads = SHEET_CHECK (ch_input).out.reads
+    if (params.sheet) {
+        SHEET_CHECK(file(params.sheet))
+        reads = SHEET_CHECK.out.reads
         ch_software_versions = ch_software_versions.mix(SHEET_CHECK.out.versions)
-    } else if (param.folder) {
-        reads = FOLDER_CHECK(ch_input).out.reads
+    } else if (params.folder) {
+        FOLDER_CHECK(Channel.fromPath(params.folder))
+        reads = FOLDER_CHECK.out.reads
         ch_software_versions = ch_software_versions.mix(FOLDER_CHECK.out.versions)
     }
 
