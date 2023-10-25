@@ -17,27 +17,32 @@ WorkflowMain.initialise(workflow, params, log)
 include { SHEET_CHECK } from                 './subworkflows/local/sheet_check'
 include { FOLDER_CHECK } from                './subworkflows/local/folder_check'
 include { QC } from                          './subworkflows/local/qc'
+include { REPORT } from                      './subworkflows/local/report'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from './modules/nf-core/custom/dumpsoftwareversions/main'
 
 workflow {
     
-    ch_software_versions = Channel.empty()
+    ch_versions = Channel.empty()
 
     // SUBWORKFLOW: Read in folder/samplesheet, validate, and stage input files
     if (params.sheet) {
         SHEET_CHECK(file(params.sheet))
         reads = SHEET_CHECK.out.reads
-        ch_software_versions = ch_software_versions.mix(SHEET_CHECK.out.versions)
+        ch_versions = ch_versions.mix(SHEET_CHECK.out.versions)
     } else if (params.folder) {
         FOLDER_CHECK(Channel.fromPath(params.folder))
         reads = FOLDER_CHECK.out.reads
-        ch_software_versions = ch_software_versions.mix(FOLDER_CHECK.out.versions)
+        ch_versions = ch_versions.mix(FOLDER_CHECK.out.versions)
     }
 
     // SUBWORKFLOW: Perform QC
     QC(reads)
-    ch_software_versions = ch_software_versions.mix(QC.out.versions)
+    ch_versions = ch_versions.mix(QC.out.versions)
 
-   // SUBWORKFLOW: Get versioning
-    CUSTOM_DUMPSOFTWAREVERSIONS (ch_software_versions.unique().collectFile(name: 'collated_versions.yml'))
+    // SUBWORKFLOW: Generate reports
+    REPORT(QC.out.readStats, QC.out.qualityStats)
+    ch_versions = ch_versions.mix(REPORT.out.versions)
+
+    // SUBWORKFLOW: Get versioning
+    CUSTOM_DUMPSOFTWAREVERSIONS (ch_versions.unique().collectFile(name: 'collated_versions.yml'))    
 }

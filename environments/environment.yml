@@ -11,3 +11,4 @@ dependencies:
   - nanoplot=1.41.6
   - csvtk=0.28.0
   - yaml=0.2.5
+  - multiqc=1.17
