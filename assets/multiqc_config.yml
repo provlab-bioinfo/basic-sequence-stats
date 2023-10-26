@@ -5,3 +5,7 @@ report_comment: >
 
 export_plots: true
 plots_force_interactive: true
+
+sp:
+  nanostat:
+    fn: "*_NanoStats.txt"

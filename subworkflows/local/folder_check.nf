@@ -9,7 +9,8 @@ workflow FOLDER_CHECK {
         folder // file: /path/to/samplesheet.csv
 
     main:
-        if (params.platform = 'illumina') {
+
+        if (params.platform.equalsIgnoreCase('illumina')) {
             def grouping = { file -> file.name.lastIndexOf('_L001').with {it != -1 ? file.name[0..<it] : file.name} }
             Channel.fromFilePairs( params.illuminaSearchPath, flat: true, grouping)
                 //    .toSortedList( { a, b ->
@@ -21,18 +22,15 @@ workflow FOLDER_CHECK {
                    .map{ create_read_channels(it) } // it -> [it[0], it.tail()] }
                    .set{ reads }
 
-        } else if (params.latform = 'nanopore') {
+        } else if (params.platform.equalsIgnoreCase("nanopore")) {
             def grouping = { file -> file.name.lastIndexOf('_').with {it != -1 ? file.name[0..<it] : file.name} }
             Channel.fromFilePairs( params.nanoporeSearchPath, flat: true , size: -1, grouping)
-                  // .toSortedList( { a, b -> a[1] <=> b[1] } )
                    .map{ create_read_channels(it) } // it -> [(it[0] =~ /barcode\d{1,3}/)[0], it.tail()] }
                    .set{ reads }
         } else {
             exit 1, "Platform must be either 'illumina' or 'nanopore'!" 
         }
 
-        log.debug "Got the reads"
-        
         FOLDERCHECK(folder)
 
     emit:
@@ -46,11 +44,11 @@ def create_read_channels(List row) {
     
     def meta = [:]
     meta.id           = row[0]
-    meta.single_end   = row.size() > 2 ? false : true
+    meta.single_end   = row.size() > 2 ? false : true    
 
-    if (params.platform == "illumina") {
+    if (params.platform.equalsIgnoreCase('illumina')) {
         reads = meta.single_end ? [checkRead(row[1].toString())] : [checkRead(row[1].toString()),checkRead(row[2].toString())]
-    } else (params.platform == "nanopore") {
+    } else if (params.platform.equalsIgnoreCase('nanopore')) {
         reads = checkRead(row[1].toString())
     }
     
