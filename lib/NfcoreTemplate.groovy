@@ -321,16 +321,29 @@ class NfcoreTemplate {
         Map colors = logColours(monochrome_logs)
         String workflow_version = NfcoreTemplate.version(workflow)
         String.format(
-            """\n
-            ${dashedLine(monochrome_logs)}
-                                                    ${colors.green},--.${colors.black}/${colors.green},-.${colors.reset}
-            ${colors.blue}        ___     __   __   __   ___     ${colors.green}/,-._.--~\'${colors.reset}
-            ${colors.blue}  |\\ | |__  __ /  ` /  \\ |__) |__         ${colors.yellow}}  {${colors.reset}
-            ${colors.blue}  | \\| |       \\__, \\__/ |  \\ |___     ${colors.green}\\`-._,-`-,${colors.reset}
-                                                    ${colors.green}`._,._,\'${colors.reset}
-            ${colors.purple}  ${workflow.manifest.name} ${workflow_version}${colors.reset}
-            ${dashedLine(monochrome_logs)}
-            """.stripIndent()
+               """\n
+               ${dashedLine(monochrome_logs)}
+               |${colors.green}⣶⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀${colors.reset}
+               |${colors.green}⠉⣿⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀${colors.reset}
+               |${colors.green}⠀⠀⠹⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣤⣶⣤⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀${colors.reset}
+               |${colors.green}⠀⠀⠘⠿⡇⠀⠀⠀⠀⠀⠀⠀⢀⣾⣿⠛⠉⠉⠛⢻⣶⣆⣀⠀⠀⠀⠀⠀⢀⣀⣴⡇ ${colors.blue}basic-sequence-stats${colors.reset}
+               |${colors.green}⠀⠀⠀⠀⢹⣶⡄⠀⠀⠀⠀⣾⣿⠀⠀⠀⠀⠀⠀⠀⠉⠹⠿⣷⣶⣶⣶⣿⡿⠿⠉ ${colors.reset}
+               |${colors.green}⠀⠀⠀⠀⠈⠙⣷⣦⣤⣼⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠁⠉⠁⠀⠀⠀⠀⠀⠀${colors.reset}
+               |${colors.green}⠀⠀⠀⠀⠀⠀⠉⠉⠛⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀${colors.reset}
+               |⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀              ${colors.reset}
+               ${dashedLine(monochrome_logs)}
+               """.stripIndent()
+
+            // """\n
+            // ${dashedLine(monochrome_logs)}
+            //                                         ${colors.green},--.${colors.black}/${colors.green},-.${colors.reset}
+            // ${colors.blue}        ___     __   __   __   ___     ${colors.green}/,-._.--~\'${colors.reset}
+            // ${colors.blue}  |\\ | |__  __ /  ` /  \\ |__) |__         ${colors.yellow}}  {${colors.reset}
+            // ${colors.blue}  | \\| |       \\__, \\__/ |  \\ |___     ${colors.green}\\`-._,-`-,${colors.reset}
+            //                                         ${colors.green}`._,._,\'${colors.reset}
+            // ${colors.purple}  ${workflow.manifest.name} ${workflow_version}${colors.reset}
+            // ${dashedLine(monochrome_logs)}
+            // """.stripIndent()
         )
     }
 }
