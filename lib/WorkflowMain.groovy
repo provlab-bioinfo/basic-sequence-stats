@@ -84,27 +84,30 @@ class WorkflowMain {
         // Check sequencing platform
         def platformList = ['illumina', 'nanopore']
         if (!params.platform) {
-            log.error "Platform not specified with e.g. '--platform illumina'. Valid options: ${platformList.join(', ')}."
+            log.error("Platform not specified. Valid options: '${platformList.join("', '")}'. E.g., '--platform illumina'. ")
             System.exit(1)
         } else if (!platformList.contains(params.platform)) {
-            log.error "Invalid platform option: '${params.platform}'. Valid options: ${platformList.join(', ')}."
+            log.error("Invalid platform option: '${params.platform}'. Valid options: '${platformList.join("', '")}'. E.g., '--platform illumina'. ")
             System.exit(1)
         }
 
         // Check input has been provided
         if ((!params.folder && !params.sheet) || (params.folder && params.sheet)) {
-            Nextflow.error("Please provide only one of an input samplesheet or input folder to the pipeline e.g. '--sheet samplesheet.csv' or '--folder /path/to/folder/")
+            log.error("Provide only one of an input samplesheet or input folder to the pipeline. E.g., '--sheet samplesheet.csv' or '--folder /path/to/folder/")
+            System.exit(1)
         }
-    }
-    //
-    // Get attribute from genome config file e.g. fasta
-    //
-    public static Object getGenomeAttribute(params, attribute) {
-        if (params.genomes && params.genome && params.genomes.containsKey(params.genome)) {
-            if (params.genomes[ params.genome ].containsKey(attribute)) {
-                return params.genomes[ params.genome ][ attribute ]
-            }
+
+        // Check output dir has been provided
+        if (!params.outdir) {
+            log.error("Provide an output directory for the results. E.g., '--outdir ./results'")
+            System.exit(1)
         }
-        return null
+
+        // Check label has been provided
+        if (!params.label) {
+            log.error("Provide a label to describe the output. E.g., '--label raw_reads'")
+            System.exit(1)
+        }
+
     }
 }

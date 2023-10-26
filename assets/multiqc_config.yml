@@ -9,3 +9,7 @@ plots_force_interactive: true
 sp:
   nanostat:
     fn: "*_NanoStats.txt"
+
+# table_columns_visible:
+#   FastQC: True
+#   nanostat: True

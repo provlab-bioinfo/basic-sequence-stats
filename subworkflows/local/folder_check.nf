@@ -1,5 +1,5 @@
 //
-// Check input folder and find files in paths in params.illuminaSearchPath and params.nanoporeSearchPath
+// Check input folder and find files in paths in params.illumina_search_path and params.nanopore_search_path
 //
 
 include { FOLDERCHECK } from '../../modules/local/foldercheck'
@@ -12,7 +12,7 @@ workflow FOLDER_CHECK {
 
         if (params.platform.equalsIgnoreCase('illumina')) {
             def grouping = { file -> file.name.lastIndexOf('_L001').with {it != -1 ? file.name[0..<it] : file.name} }
-            Channel.fromFilePairs( params.illuminaSearchPath, flat: true, grouping)
+            Channel.fromFilePairs( params.illumina_search_path, flat: true, grouping)
                 //    .toSortedList( { a, b ->
                 //         def aparts = a[0].split("_S").collect { it as short }
                 //         def bparts = b[0].split("_S").collect { it as short }
@@ -24,7 +24,7 @@ workflow FOLDER_CHECK {
 
         } else if (params.platform.equalsIgnoreCase("nanopore")) {
             def grouping = { file -> file.name.lastIndexOf('_').with {it != -1 ? file.name[0..<it] : file.name} }
-            Channel.fromFilePairs( params.nanoporeSearchPath, flat: true , size: -1, grouping)
+            Channel.fromFilePairs( params.nanopore_search_path, flat: true , size: -1, grouping)
                    .map{ create_read_channels(it) } // it -> [(it[0] =~ /barcode\d{1,3}/)[0], it.tail()] }
                    .set{ reads }
         } else {
