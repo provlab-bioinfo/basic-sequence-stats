@@ -8,7 +8,8 @@ ch_multiqc_logo            = params.multiqc_logo ?          Channel.fromPath(par
 workflow REPORT {
     take:
         readStats
-        qualityStats
+        illuminaQuality
+        nanoporeQuality
     main:
 
         ch_versions = Channel.empty()
@@ -21,7 +22,9 @@ workflow REPORT {
         ch_versions = ch_versions.mix(CSVTK_CONCAT_QC.out.versions)   
 
         // SUBWORKFLOW: Generate MultiQC report (Nanoplot and FastQC)
-        ch_multiqc_files = qualityStats.map{ it.last() }.ifEmpty([]).flatten()
+        ch_multiqc_illumina = illuminaQuality.map{ it.last() }.ifEmpty([]).flatten()
+        ch_multiqc_nanopore = nanoporeQuality.map{ it.last() }.ifEmpty([]).flatten()
+        ch_multiqc_files = ch_multiqc_illumina.mix(ch_multiqc_nanopore)
 
         MULTIQC(ch_multiqc_files.collect(), 
                 ch_multiqc_config.toList(), 

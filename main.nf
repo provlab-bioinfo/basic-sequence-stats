@@ -14,8 +14,7 @@ WorkflowMain.initialise(workflow, params, log)
 // if ((params.sheet == null && params.folder) == null || (params.sheet != null && params.folder != null)) {
 //     exit 1, "Must specify one of '--folder' or '--sheet'!"}
 
-include { SHEET_CHECK } from                 './subworkflows/local/sheet_check'
-include { FOLDER_CHECK } from                './subworkflows/local/folder_check'
+include { LOAD_SHEET } from                  './subworkflows/local/load_sheet'
 include { QC } from                          './subworkflows/local/qc'
 include { REPORT } from                      './subworkflows/local/report'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from './modules/nf-core/custom/dumpsoftwareversions/main'
@@ -24,25 +23,21 @@ workflow {
     
     ch_versions = Channel.empty()
 
-    // SUBWORKFLOW: Read in folder/samplesheet, validate, and stage input files
-    if (params.sheet) {
-        SHEET_CHECK(file(params.sheet))
-        reads = SHEET_CHECK.out.reads
-        ch_versions = ch_versions.mix(SHEET_CHECK.out.versions)
-    } else if (params.folder) {
-        FOLDER_CHECK(Channel.fromPath(params.folder))
-        reads = FOLDER_CHECK.out.reads
-        ch_versions = ch_versions.mix(FOLDER_CHECK.out.versions)
-    }
+    // SUBWORKFLOW: Read in samplesheet
+    LOAD_SHEET(file(params.sheet))
 
     // SUBWORKFLOW: Perform QC
-    QC(reads)
+    QC(LOAD_SHEET.out.illumina, LOAD_SHEET.out.nanopore)
     ch_versions = ch_versions.mix(QC.out.versions)
 
     // SUBWORKFLOW: Generate reports
-    REPORT(QC.out.readStats, QC.out.qualityStats)
+    REPORT(QC.out.readStats, QC.out.illuminaQuality, QC.out.nanoporeQuality)
     ch_versions = ch_versions.mix(REPORT.out.versions)
 
     // SUBWORKFLOW: Get versioning
     CUSTOM_DUMPSOFTWAREVERSIONS (ch_versions.unique().collectFile(name: 'collated_versions.yml'))    
+
+    emit:
+        reads = LOAD_SHEET.out.reads
+        versions = ch_versions
 }

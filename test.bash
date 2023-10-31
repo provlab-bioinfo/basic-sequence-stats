@@ -1,3 +1,5 @@
 conda activate basic-sequence-stats
-nextflow run . --label raw --folder ./testInput/230503_N_N_046/  --outdir ./testOutput/230503_N_N_046/ --platform nanopore
-nextflow run . --label raw --folder ./testInput/230503_N_I_047/  --outdir ./testOutput/230503_N_I_047/ --platform illumina
+
+nextflow run . --label raw --sheet /nfs/Genomics_DEV/projects/alindsay/Projects/basic-sequence-collecter/testOutput/230503_N_I_047/pipeline_info/samplesheet.valid.csv --outdir ./testOutput/230503_N_I_047/
+
+nextflow run . --label raw --sheet /nfs/Genomics_DEV/projects/alindsay/Projects/basic-sequence-collecter/testOutput/230503_N_N_046/pipeline_info/samplesheet.valid.csv --outdir ./testOutput/230503_N_N_046/
