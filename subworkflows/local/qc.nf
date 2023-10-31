@@ -11,7 +11,8 @@ workflow QC {
         versions = Channel.empty()
 
         // SUBWORKFLOW: Do read statistics
-        SEQKIT_STATS_QC(illumina.mix(nanopore)).stats.set { readStats }  
+        reads = illumina.join(nanopore).map{ meta, illumina, nanopore -> [ meta, illumina + [nanopore] ] }
+        SEQKIT_STATS_QC(reads).stats.set { readStats }  
         versions = versions.mix(SEQKIT_STATS_QC.out.versions)      
 
         // SUBWORKFLOW: Do reads quality checks
