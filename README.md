@@ -66,12 +66,12 @@ The output file structure is determined by the `outdir` and `label` parameters, 
 ```bash
 <outdir>
    ├── pipeline_info
-   │          └── software_versions.yml
+   │      └── software_versions.yml
    ├── <label>
    │      └── stats
-   │            ├── <ID>.nanoplot.html
-   │            ├── <ID>.seqkit.tsv
-   │            └── <ID>.fastqc.html
+   │             ├── <ID>.nanoplot.html
+   │             ├── <ID>.seqkit.tsv
+   │             └── <ID>.fastqc.html
    └── report
           ├── <label>.multiqc.html
           └── <label>.seqkit.tsv

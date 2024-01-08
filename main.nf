@@ -15,7 +15,7 @@ WorkflowMain.initialise(workflow, params, log)
 //     exit 1, "Must specify one of '--folder' or '--sheet'!"}
 
 include { LOAD_SHEET } from                  './subworkflows/local/load_sheet'
-include { QC } from                          './subworkflows/local/qc'
+include { STATS } from                          './subworkflows/local/stats'
 include { REPORT } from                      './subworkflows/local/report'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from './modules/nf-core/custom/dumpsoftwareversions/main'
 
@@ -27,11 +27,11 @@ workflow {
     LOAD_SHEET(file(params.sheet))
 
     // SUBWORKFLOW: Perform QC
-    QC(LOAD_SHEET.out.illumina, LOAD_SHEET.out.nanopore)
-    ch_versions = ch_versions.mix(QC.out.versions)
+    STATS(LOAD_SHEET.out.illumina, LOAD_SHEET.out.nanopore)
+    ch_versions = ch_versions.mix(STATS.out.versions)
 
     // SUBWORKFLOW: Generate reports
-    REPORT(QC.out.readStats, QC.out.illuminaQuality, QC.out.nanoporeQuality)
+    REPORT(STATS.out.readStats, STATS.out.illuminaQuality, STATS.out.nanoporeQuality)
     ch_versions = ch_versions.mix(REPORT.out.versions)
 
     // SUBWORKFLOW: Get versioning
