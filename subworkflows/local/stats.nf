@@ -1,13 +1,13 @@
-include { SEQKIT_STATS as SEQKIT_STATS } from '../../modules/nf-core/seqkit/stats/main'
-include { FASTQC as FASTQC_STATS } from             '../../modules/nf-core/fastqc/main'
-include { NANOPLOT as NANOPLOT_STATS } from         '../../modules/nf-core/nanoplot/main'
+include { SEQKIT_STATS }               from '../../modules/nf-core/seqkit/stats/main'
+include { FASTQC as FASTQC_STATS }     from '../../modules/nf-core/fastqc/main'
+include { NANOPLOT as NANOPLOT_STATS } from '../../modules/nf-core/nanoplot/main'
 
-workflow QC {   
+workflow STATS {   
     take:
         illumina
         nanopore
-    main:
 
+    main:
         versions = Channel.empty()
 
         // SUBWORKFLOW: Do read statistics

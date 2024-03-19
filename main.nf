@@ -15,7 +15,7 @@ WorkflowMain.initialise(workflow, params, log)
 //     exit 1, "Must specify one of '--folder' or '--sheet'!"}
 
 include { LOAD_SHEET } from                  './subworkflows/local/load_sheet'
-include { STATS } from                          './subworkflows/local/stats'
+include { STATS } from                       './subworkflows/local/stats'
 include { REPORT } from                      './subworkflows/local/report'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from './modules/nf-core/custom/dumpsoftwareversions/main'
 
@@ -38,6 +38,6 @@ workflow {
     CUSTOM_DUMPSOFTWAREVERSIONS (ch_versions.unique().collectFile(name: 'collated_versions.yml'))    
 
     emit:
-        reads = LOAD_SHEET.out.reads
+        samplesheet = params.sheet
         versions = ch_versions
 }
