@@ -8,8 +8,10 @@ workflow LOAD_SHEET {
 
     main:
         Channel.fromPath(samplesheet).splitCsv ( header:true, sep:',' )        
-            .map { create_read_channels(it) }
+            //.map { create_read_channels(it) }
             .set { reads }
+
+        reads.view()
 
         reads.map { meta, illuminaFQ, nanopore -> [ meta, illuminaFQ ] }
             .filter { meta, illuminaFQ -> illuminaFQ[0] != 'NA' && illuminaFQ[1] != 'NA' }
