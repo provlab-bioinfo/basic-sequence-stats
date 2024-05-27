@@ -1,20 +1,20 @@
 workflow STATS {
     take:
-        input // file: /path/to/samplesheet.csv
-        output
+        sheet // file: /path/to/samplesheet.csv
+        outdir
         label
 
     main:
-        COLLECT_FILES(input, output, label)
+        GET_STATS(sheet, outdir, label)
 
     emit:
-        samplesheet = COLLECT_FILES.out.samplesheet
-        versions = COLLECT_FILES.out.versions
+        //samplesheet = GET_STATS.out.samplesheet
+        versions = GET_STATS.out.versions
 
 }
 
 process GET_STATS {
-    tag "$folder"
+    tag "$sheet"
     label 'process_medium'
 
     conda "conda-forge::python=3.9.5"
@@ -23,10 +23,12 @@ process GET_STATS {
         'biocontainers/python:3.9--1' }"
 
     input:
-        tuple path(input), path(output), val(label)
+        path(sheet)
+        path(outdir)
+        val(label)
 
     output:
-        path '*.csv'       , emit: samplesheet
+       // path '*.csv'       , emit: samplesheet
         path "versions.yml", emit: versions
 
     when:
@@ -34,11 +36,11 @@ process GET_STATS {
 
     script: // This script is bundled with the pipeline, in nf-core/rnaseq/bin/
         """
-        nextflow run https://github.com/provlab-bioinfo/basic-sequence-stats \
-        --input ${input} \
-        --output ${output} \
-        --label ${label} \
-        -r main
+        #nextflow run https://github.com/provlab-bioinfo/basic-sequence-stats \
+        nextflow run /nfs/Genomics_DEV/projects/alindsay/Projects/basic-sequence-stats \
+        --sheet ${sheet} \
+        --outdir ${outdir} \
+        --label ${label}
 
         cat <<-END_VERSIONS > versions.yml
         "${task.process}":

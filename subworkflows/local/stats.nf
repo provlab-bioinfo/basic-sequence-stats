@@ -12,13 +12,10 @@ workflow STATS {
 
         // SUBWORKFLOW: Do read statistics
         reads = illumina.join(nanopore, remainder: true).map{ meta, illumina, nanopore -> [ meta, illumina + [nanopore] ] }.map{ meta, reads -> [meta, reads - null]}
-        log.debug("Reads:")
-        reads.view()
-        log.debug("End Reads")
         SEQKIT_STATS(reads).stats.set { readStats }  
         versions = versions.mix(SEQKIT_STATS.out.versions)      
 
-        // SUBWORKFLOW: Do reads quality checks
+        // SUBWORKFLOW: Do read quality checks
         FASTQC_STATS(illumina).zip.set { illuminaQuality }
         versions = versions.mix(FASTQC_STATS.out.versions)
 
